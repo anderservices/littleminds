@@ -20,6 +20,7 @@
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
+            min-width: 100%;
         }
 
         /* HEADER STYLES */
@@ -1102,7 +1103,7 @@
     <script>
         // ===== MUSIC PLAYER =====
         const songs = [
-            { title: "Learning Is Play", src: "./Learning.mp3" },
+            { title: "Learning Is Play", src: "./learning.mp3" },
             { title: "Ideas in Motion", src: "./bounce.mp3" },
             { title: "Small Minds, Big Questions", src: "music/mates.mp3" },
             { title: "One More Step", src: "music/dibujo.mp3" },
@@ -1257,17 +1258,115 @@
         
         // JUEGO 1: COLORES
         function startColorGame() {
+            const gameTypes = ['identifyColor', 'mixColors', 'colorSequence', 'colorWords'];
+            const gameType = gameTypes[Math.floor(Math.random() * gameTypes.length)];
+            
+            switch(gameType) {
+            case 'identifyColor': startIdentifyColor(); break;
+            case 'mixColors': startMixColors(); break;
+            case 'colorSequence': startColorSequence(); break;
+            case 'colorWords': startColorWords(); break;
+            }
+        }
+        
+        function startIdentifyColor() {
             const colors = ['Rojo', 'Azul', 'Verde', 'Amarillo', 'Naranja', 'Morado'];
             const colorValues = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFC93C', '#FFA500', '#9B59B6'];
             const random = Math.floor(Math.random() * colors.length);
             
             let html = `<h2>🎨 Identifica el Color</h2>
-                        <p>¿De qué color es el cuadrado?</p>
-                        <div style="width:100%; height:120px; background:${colorValues[random]}; border-radius:15px; margin:25px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.2);"></div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
+                <p>¿De qué color es el cuadrado?</p>
+                <div style="width:100%; height:120px; background:${colorValues[random]}; border-radius:15px; margin:25px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.2);"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
             
             colors.forEach((color, index) => {
-                html += `<button class="btn" onclick="checkColor(${index}, ${random})">${color}</button>`;
+            html += `<button class="btn" onclick="checkColor(${index}, ${random})">${color}</button>`;
+            });
+            
+            html += '</div>';
+            document.getElementById('gameContent').innerHTML = html;
+        }
+        
+        function startMixColors() {
+            const mixes = [
+            { q: 'Rojo + Amarillo = ?', options: ['Naranja', 'Verde', 'Morado'], correct: 0 },
+            { q: 'Azul + Amarillo = ?', options: ['Verde', 'Naranja', 'Rojo'], correct: 0 },
+            { q: 'Rojo + Azul = ?', options: ['Morado', 'Verde', 'Naranja'], correct: 0 },
+            { q: 'Rojo + Blanco = ?', options: ['Rosa', 'Naranja', 'Marrón'], correct: 0 },
+            { q: 'Azul + Negro = ?', options: ['Azul Oscuro', 'Verde', 'Púrpura'], correct: 0 },
+            { q: 'Amarillo + Rojo = ?', options: ['Naranja', 'Verde', 'Marrón'], correct: 0 },
+            { q: 'Verde + Azul = ?', options: ['Verde Azulado', 'Morado', 'Naranja'], correct: 0 },
+            { q: 'Naranja + Rojo = ?', options: ['Rojo Oscuro', 'Amarillo', 'Morado'], correct: 0 },
+            ];
+            
+            const random = Math.floor(Math.random() * mixes.length);
+            const mix = mixes[random];
+            
+            let html = `<h2>🎨 Mezcla de Colores</h2>
+                <p style="font-size:1.3em; font-weight:bold; color:#667eea; margin:20px 0;">${mix.q}</p>
+                <div style="display:grid; grid-template-columns: 1fr; gap: 12px;">`;
+            
+            mix.options.forEach((opt, index) => {
+            html += `<button class="btn" onclick="checkColorMix(${index}, ${mix.correct})" style="padding:15px; font-size:1.1em;">${opt}</button>`;
+            });
+            
+            html += '</div>';
+            document.getElementById('gameContent').innerHTML = html;
+        }
+        
+        function startColorSequence() {
+            const sequences = [
+            { colors: ['#FF6B6B', '#FFC93C', '#45B7D1'], question: 'Rojo, Amarillo, ?' },
+            { colors: ['#FF6B6B', '#9B59B6', '#4ECDC4'], question: 'Rojo, Morado, ?' },
+            { colors: ['#45B7D1', '#4ECDC4', '#90EE90'], question: 'Azul, Verde Claro, ?' },
+            { colors: ['#FFC93C', '#FFA500', '#FF6B6B'], question: 'Amarillo, Naranja, ?' },
+            ];
+            
+            const random = Math.floor(Math.random() * sequences.length);
+            const seq = sequences[random];
+            const options = ['#4ECDC4', '#FF6B6B', '#FFC93C', '#9B59B6', '#45B7D1', '#90EE90'];
+            
+            let html = `<h2>🎨 Secuencia de Colores</h2>
+                <p>${seq.question}</p>
+                <div style="display:flex; gap:15px; justify-content:center; margin:20px 0; flex-wrap:wrap;">`;
+            
+            seq.colors.forEach(color => {
+            html += `<div style="width:80px; height:80px; background:${color}; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>`;
+            });
+            
+            html += `<div style="width:80px; height:80px; border:3px dashed #ccc; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#999; font-weight:bold;">?</div></div>`;
+            html += `<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">`;
+            
+            options.forEach((color, index) => {
+            html += `<button class="btn" onclick="checkColorSequence(${index}, '${seq.colors[seq.colors.length-1]}')" style="background:${color}; width:100%; height:50px; border-radius:10px;"></button>`;
+            });
+            
+            html += '</div>';
+            document.getElementById('gameContent').innerHTML = html;
+        }
+        
+        function startColorWords() {
+            const data = [
+            { color: '#FF6B6B', word: 'Rojo', options: ['Rojo', 'Azul', 'Verde'], correct: 0 },
+            { color: '#4ECDC4', word: 'Azul', options: ['Verde', 'Azul', 'Amarillo'], correct: 1 },
+            { color: '#90EE90', word: 'Verde', options: ['Rojo', 'Naranja', 'Verde'], correct: 2 },
+            { color: '#FFC93C', word: 'Amarillo', options: ['Amarillo', 'Morado', 'Rosa'], correct: 0 },
+            { color: '#FFA500', word: 'Naranja', options: ['Azul', 'Naranja', 'Rojo'], correct: 1 },
+            { color: '#9B59B6', word: 'Morado', options: ['Verde', 'Rosa', 'Morado'], correct: 2 },
+            { color: '#FFB6C1', word: 'Rosa', options: ['Rosa', 'Rojo', 'Naranja'], correct: 0 },
+            { color: '#8B4513', word: 'Marrón', options: ['Morado', 'Marrón', 'Negro'], correct: 1 },
+            ];
+            
+            const random = Math.floor(Math.random() * data.length);
+            const item = data[random];
+            
+            let html = `<h2>🎨 Nombre del Color</h2>
+                <p>¿Qué palabra describe este color?</p>
+                <div style="width:100%; height:120px; background:${item.color}; border-radius:15px; margin:25px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.2);"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
+            
+            item.options.forEach((opt, index) => {
+            html += `<button class="btn" onclick="checkColorWord(${index}, ${item.correct})">${opt}</button>`;
             });
             
             html += '</div>';
@@ -1276,36 +1375,77 @@
         
         function checkColor(selected, correct) {
             if (selected === correct) {
-                document.getElementById('gameContent').innerHTML = `<div class="success-message">¡Correcto! ✨ +10 puntos</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Siguiente</button>`;
-                addPoints(10);
-                correctAnswers++;
+            document.getElementById('gameContent').innerHTML = `<div class="success-message">¡Correcto! ✨ +10 puntos</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Siguiente</button>`;
+            addPoints(10);
+            correctAnswers++;
             } else {
-                document.getElementById('gameContent').innerHTML = `<div class="error-message">¡Intenta de nuevo! 🎯</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Reintentar</button>`;
+            document.getElementById('gameContent').innerHTML = `<div class="error-message">¡Intenta de nuevo! 🎯</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Reintentar</button>`;
+            }
+        }
+        
+        function checkColorMix(selected, correct) {
+            if (selected === correct) {
+            document.getElementById('gameContent').innerHTML = `<div class="success-message">¡Mezcla Correcta! 🎨 +15 puntos</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Siguiente</button>`;
+            addPoints(15);
+            correctAnswers++;
+            } else {
+            document.getElementById('gameContent').innerHTML = `<div class="error-message">¡Intenta de nuevo! 🖌️</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Reintentar</button>`;
+            }
+        }
+        
+        function checkColorSequence(selected, correct) {
+            if (selected === correct) {
+            document.getElementById('gameContent').innerHTML = `<div class="success-message">¡Secuencia Correcta! 🌈 +15 puntos</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Siguiente</button>`;
+            addPoints(15);
+            correctAnswers++;
+            } else {
+            document.getElementById('gameContent').innerHTML = `<div class="error-message">¡Intenta de nuevo! 🎯</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Reintentar</button>`;
+            }
+        }
+        
+        function checkColorWord(selected, correct) {
+            if (selected === correct) {
+            document.getElementById('gameContent').innerHTML = `<div class="success-message">¡Nombre Correcto! 🏷️ +10 puntos</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Siguiente</button>`;
+            addPoints(10);
+            correctAnswers++;
+            } else {
+            document.getElementById('gameContent').innerHTML = `<div class="error-message">¡Intenta de nuevo! 📚</div><button class="btn" onclick="startColorGame()" style="margin-top: 20px;">Reintentar</button>`;
             }
         }
         
         // JUEGO 2: MATEMÁTICAS
         function startMathGame() {
+            const gameTypes = ['operation', 'problem'];
+            const gameType = gameTypes[Math.floor(Math.random() * gameTypes.length)];
+            
+            if (gameType === 'operation') {
+            startMathOperation();
+            } else {
+            startMathProblem();
+            }
+        }
+        
+        function startMathOperation() {
             const operations = ['+', '-', '×', '÷'];
             const op = operations[Math.floor(Math.random() * operations.length)];
             let num1, num2, correct;
             
             if (op === '+') {
-                num1 = Math.floor(Math.random() * 20) + 1;
-                num2 = Math.floor(Math.random() * 20) + 1;
-                correct = num1 + num2;
+            num1 = Math.floor(Math.random() * 20) + 1;
+            num2 = Math.floor(Math.random() * 20) + 1;
+            correct = num1 + num2;
             } else if (op === '-') {
-                num1 = Math.floor(Math.random() * 30) + 10;
-                num2 = Math.floor(Math.random() * num1);
-                correct = num1 - num2;
+            num1 = Math.floor(Math.random() * 30) + 10;
+            num2 = Math.floor(Math.random() * num1);
+            correct = num1 - num2;
             } else if (op === '×') {
-                num1 = Math.floor(Math.random() * 12) + 1;
-                num2 = Math.floor(Math.random() * 12) + 1;
-                correct = num1 * num2;
+            num1 = Math.floor(Math.random() * 12) + 1;
+            num2 = Math.floor(Math.random() * 12) + 1;
+            correct = num1 * num2;
             } else {
-                num1 = Math.floor(Math.random() * 10) * (Math.floor(Math.random() * 12) + 1);
-                num2 = Math.floor(Math.random() * 12) + 1;
-                correct = num1 / num2;
+            num1 = Math.floor(Math.random() * 10) * (Math.floor(Math.random() * 12) + 1);
+            num2 = Math.floor(Math.random() * 12) + 1;
+            correct = num1 / num2;
             }
             
             const wrong1 = correct + Math.floor(Math.random() * 10) + 1;
@@ -1313,11 +1453,50 @@
             const answers = [correct, wrong1, wrong2].sort(() => Math.random() - 0.5);
             
             let html = `<h2>🔢 Resuelve la Operación</h2>
-                        <p style="font-size:2em; font-weight:bold; text-align:center; color:#667eea; margin:20px 0;">${num1} ${op} ${num2} = ?</p>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
+                <p style="font-size:2em; font-weight:bold; text-align:center; color:#667eea; margin:20px 0;">${num1} ${op} ${num2} = ?</p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
             
             answers.forEach(answer => {
-                html += `<button class="btn" onclick="checkMath(${answer}, ${correct})">${Math.round(answer)}</button>`;
+            html += `<button class="btn" onclick="checkMath(${answer}, ${correct})">${Math.round(answer)}</button>`;
+            });
+            
+            html += '</div>';
+            document.getElementById('gameContent').innerHTML = html;
+        }
+        
+        function startMathProblem() {
+            const problems = [
+            { question: 'Si tienes 5 manzanas y tu amigo te da 3 más, ¿cuántas manzanas tienes?', correct: 8, wrong1: 7, wrong2: 6 },
+            { question: 'Una bicicleta cuesta $50 y tienes $30. ¿Cuánto dinero te falta?', correct: 20, wrong1: 15, wrong2: 25 },
+            { question: 'Si tienes 12 caramelos y los repartes entre 3 amigos por igual, ¿cuántos caramelos recibe cada uno?', correct: 4, wrong1: 3, wrong2: 5 },
+            { question: 'En una clase hay 25 alumnos. Si 8 están ausentes, ¿cuántos alumnos están presentes?', correct: 17, wrong1: 16, wrong2: 18 },
+            { question: 'Un libro cuesta $15 y otro $12. ¿Cuánto cuesta comprar los dos libros?', correct: 27, wrong1: 26, wrong2: 28 },
+            { question: 'Si tienes $100 y gastas $45 en ropa, ¿cuánto dinero te queda?', correct: 55, wrong1: 50, wrong2: 60 },
+            { question: 'Una caja tiene 24 lápices. Si repartes 8 lápices, ¿cuántos lápices quedan?', correct: 16, wrong1: 15, wrong2: 17 },
+            { question: 'Si María tiene 6 años y su hermano tiene el doble, ¿cuántos años tiene su hermano?', correct: 12, wrong1: 11, wrong2: 13 },
+            { question: 'Un pastel se divide en 8 partes iguales. Si comes 3 partes, ¿cuántas partes quedan?', correct: 5, wrong1: 4, wrong2: 6 },
+            { question: 'En la tienda hay 30 manzanas. Si venden 18, ¿cuántas manzanas quedan?', correct: 12, wrong1: 11, wrong2: 13 },
+            { question: 'Si Juan tiene $200 y gasta $75 en un videojuego, ¿cuánto dinero le queda?', correct: 125, wrong1: 120, wrong2: 130 },
+            { question: 'Una bolsa tiene 50 caramelos. Si repartes 20 caramelos, ¿cuántos caramelos quedan?', correct: 30, wrong1: 29, wrong2: 31 },
+            { question: 'Si sumas 25 + 35, ¿cuál es el resultado?', correct: 60, wrong1: 55, wrong2: 65 },
+            { question: 'Un taller tiene 48 asientos organizados en 6 filas iguales. ¿Cuántos asientos hay por fila?', correct: 8, wrong1: 7, wrong2: 9 },
+            { question: 'Si tengo 7 billetes de $10, ¿cuánto dinero tengo en total?', correct: 70, wrong1: 60, wrong2: 80 },
+            { question: 'Una película dura 120 minutos. Si ya viste 45 minutos, ¿cuántos minutos faltan?', correct: 75, wrong1: 70, wrong2: 80 },
+            { question: 'Si compras 3 camisetas a $20 cada una, ¿cuánto gastas en total?', correct: 60, wrong1: 55, wrong2: 65 },
+            { question: 'En una granja hay 15 gallinas y 12 patos. ¿Cuántos animales hay en total?', correct: 27, wrong1: 26, wrong2: 28 },
+            { question: 'Si un juguete cuesta $40 y tienes $100, ¿cuánto dinero sobra después de comprarlo?', correct: 60, wrong1: 55, wrong2: 65 },
+            { question: 'Una escuela tiene 240 estudiantes en 6 grados. Si cada grado tiene igual número de estudiantes, ¿cuántos hay por grado?', correct: 40, wrong1: 35, wrong2: 45 }
+            ];
+            
+            const problem = problems[Math.floor(Math.random() * problems.length)];
+            const answers = [problem.correct, problem.wrong1, problem.wrong2].sort(() => Math.random() - 0.5);
+            
+            let html = `<h2>📝 Problema Matemático</h2>
+                <p style="font-size:1.1em; color:#333; margin:20px 0; line-height:1.6;">${problem.question}</p>
+                <div style="display:grid; grid-template-columns: 1fr; gap: 10px;">`;
+            
+            answers.forEach(answer => {
+            html += `<button class="btn" onclick="checkMath(${answer}, ${problem.correct})" style="padding:15px; font-size:1.1em;">${answer}</button>`;
             });
             
             html += '</div>';
@@ -1326,31 +1505,62 @@
         
         function checkMath(selected, correct) {
             if (selected === correct) {
-                document.getElementById('gameContent').innerHTML = `<div class="success-message">¡Excelente! ⭐ +15 puntos</div><button class="btn" onclick="startMathGame()" style="margin-top: 20px;">Siguiente</button>`;
-                addPoints(15);
-                correctAnswers++;
+            document.getElementById('gameContent').innerHTML = `<div class="success-message">¡Excelente! ⭐ +15 puntos</div><button class="btn" onclick="startMathGame()" style="margin-top: 20px;">Siguiente</button>`;
+            addPoints(15);
+            correctAnswers++;
             } else {
-                document.getElementById('gameContent').innerHTML = `<div class="error-message">¡Fallaste! Respuesta: ${Math.round(correct)} 🎯</div><button class="btn" onclick="startMathGame()" style="margin-top: 20px;">Reintentar</button>`;
+            document.getElementById('gameContent').innerHTML = `<div class="error-message">¡Fallaste! Respuesta correcta: ${correct} 🎯</div><button class="btn" onclick="startMathGame()" style="margin-top: 20px;">Reintentar</button>`;
             }
         }
         
         // JUEGO 3: MEMORIA
         function startMemoryGame() {
-            const emojis = ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈', '🍕', '🍕', '🌟', '🌟'];
-            let shuffled = [...emojis].sort(() => Math.random() - 0.5);
+            const level = Math.min(Math.floor(points / 50) + 1, 25);
+            const levelConfigs = [
+            { pairs: 2, emojis: ['🍎', '🍎', '🐱', '🐱'] },
+            { pairs: 3, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐'] },
+            { pairs: 4, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈'] },
+            { pairs: 5, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈', '🍕', '🍕'] },
+            { pairs: 6, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈', '🍕', '🍕', '🌟', '🌟'] },
+            { pairs: 7, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈', '🍕', '🍕', '🌟', '🌟', '🚀', '🚀'] },
+            { pairs: 8, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈', '🍕', '🍕', '🌟', '🌟', '🚀', '🚀', '🎮', '🎮'] },
+            { pairs: 9, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈', '🍕', '🍕', '🌟', '🌟', '🚀', '🚀', '🎮', '🎮', '🏆', '🏆'] },
+            { pairs: 10, emojis: ['🍎', '🍎', '🐱', '🐱', '⭐', '⭐', '🎈', '🎈', '🍕', '🍕', '🌟', '🌟', '🚀', '🚀', '🎮', '🎮', '🏆', '🏆', '🎁', '🎁'] },
+            { pairs: 6, emojis: ['🍎', '🍎', '🐕', '🐕', '🎨', '🎨', '🌈', '🌈', '🎪', '🎪', '🎭', '🎭'] },
+            { pairs: 7, emojis: ['🍎', '🍎', '🐕', '🐕', '🎨', '🎨', '🌈', '🌈', '🎪', '🎪', '🎭', '🎭', '🎸', '🎸'] },
+            { pairs: 8, emojis: ['🍎', '🍎', '🐕', '🐕', '🎨', '🎨', '🌈', '🌈', '🎪', '🎪', '🎭', '🎭', '🎸', '🎸', '🎯', '🎯'] },
+            { pairs: 9, emojis: ['🍎', '🍎', '🐕', '🐕', '🎨', '🎨', '🌈', '🌈', '🎪', '🎪', '🎭', '🎭', '🎸', '🎸', '🎯', '🎯', '🎲', '🎲'] },
+            { pairs: 10, emojis: ['🍎', '🍎', '🐕', '🐕', '🎨', '🎨', '🌈', '🌈', '🎪', '🎪', '🎭', '🎭', '🎸', '🎸', '🎯', '🎯', '🎲', '🎲', '🎰', '🎰'] },
+            { pairs: 8, emojis: ['🚗', '🚗', '🚕', '🚕', '🚙', '🚙', '🚌', '🚌', '🚎', '🚎', '🏎️', '🏎️', '🚓', '🚓', '🚑', '🚑'] },
+            { pairs: 9, emojis: ['🚗', '🚗', '🚕', '🚕', '🚙', '🚙', '🚌', '🚌', '🚎', '🚎', '🏎️', '🏎️', '🚓', '🚓', '🚑', '🚑', '✈️', '✈️'] },
+            { pairs: 10, emojis: ['🚗', '🚗', '🚕', '🚕', '🚙', '🚙', '🚌', '🚌', '🚎', '🚎', '🏎️', '🏎️', '🚓', '🚓', '🚑', '🚑', '✈️', '✈️', '🚁', '🚁'] },
+            { pairs: 11, emojis: ['🚗', '🚗', '🚕', '🚕', '🚙', '🚙', '🚌', '🚌', '🚎', '🚎', '🏎️', '🏎️', '🚓', '🚓', '🚑', '🚑', '✈️', '✈️', '🚁', '🚁', '🚂', '🚂'] },
+            { pairs: 12, emojis: ['🚗', '🚗', '🚕', '🚕', '🚙', '🚙', '🚌', '🚌', '🚎', '🚎', '🏎️', '🏎️', '🚓', '🚓', '🚑', '🚑', '✈️', '✈️', '🚁', '🚁', '🚂', '🚂', '🚆', '🚆'] },
+            { pairs: 10, emojis: ['🌺', '🌺', '🌻', '🌻', '🌷', '🌷', '🌹', '🌹', '🥀', '🥀', '🌼', '🌼', '🌸', '🌸', '💐', '💐', '🌾', '🌾', '🌿', '🌿'] },
+            { pairs: 11, emojis: ['🌺', '🌺', '🌻', '🌻', '🌷', '🌷', '🌹', '🌹', '🥀', '🥀', '🌼', '🌼', '🌸', '🌸', '💐', '💐', '🌾', '🌾', '🌿', '🌿', '🍀', '🍀'] },
+            { pairs: 12, emojis: ['🌺', '🌺', '🌻', '🌻', '🌷', '🌷', '🌹', '🌹', '🥀', '🥀', '🌼', '🌼', '🌸', '🌸', '💐', '💐', '🌾', '🌾', '🌿', '🌿', '🍀', '🍀', '🍃', '🍃'] },
+            { pairs: 13, emojis: ['⭐', '⭐', '🌟', '🌟', '✨', '✨', '💫', '💫', '🌠', '🌠', '💥', '💥', '⚡', '⚡', '🔥', '🔥', '❄️', '❄️', '🌪️', '🌪️', '🌈', '🌈', '☀️', '☀️', '🌙', '🌙'] }
+            ];
             
-            let html = `<h2>🧠 Juego de Memoria</h2>
-                        <p>¡Encuentra todos los pares iguales!</p>
-                        <div class="game-grid" id="memoryGrid">`;
+            const config = levelConfigs[Math.min(level - 1, 24)];
+            let shuffled = [...config.emojis].sort(() => Math.random() - 0.5);
+            window.currentMemoryLevel = level;
+            
+            let html = `<h2>🧠 Juego de Memoria - Nivel ${level}/25</h2>
+            <p style="text-align:center; color:#667eea; font-weight:bold; margin:10px 0;">Pares: ${config.pairs}</p>
+            <p>¡Encuentra todos los pares iguales!</p>
+            <div class="game-grid" id="memoryGrid" style="grid-template-columns: repeat(${Math.ceil(Math.sqrt(config.emojis.length))}, 1fr);">`;
             
             shuffled.forEach((emoji, index) => {
-                html += `<div class="tile" onclick="flipMemory(${index})" data-index="${index}" data-emoji="${emoji}">?</div>`;
+            html += `<div class="tile" onclick="flipMemory(${index})" data-index="${index}" data-emoji="${emoji}">?</div>`;
             });
             
             html += '</div>';
             document.getElementById('gameContent').innerHTML = html;
+            
+            window.memoryTotalTiles = config.emojis.length;
         }
-        
+
         function flipMemory(index) {
             const tile = document.querySelector(`[data-index="${index}"]`);
             if (tile.classList.contains('flipped')) return;
@@ -1360,20 +1570,38 @@
             
             const flipped = document.querySelectorAll('.tile.flipped');
             if (flipped.length === 2) {
-                if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
-                    flipped[0].classList.add('correct');
-                    flipped[1].classList.add('correct');
-                    addPoints(10);
-                    correctAnswers++;
-                } else {
-                    setTimeout(() => {
-                        flipped[0].classList.remove('flipped');
-                        flipped[1].classList.remove('flipped');
-                        flipped[0].textContent = '?';
-                        flipped[1].textContent = '?';
-                    }, 500);
-                }
+            if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+            flipped[0].classList.add('correct');
+            flipped[1].classList.add('correct');
+            addPoints(10);
+            correctAnswers++;
+            
+            setTimeout(() => {
+            const correct = document.querySelectorAll('.tile.correct');
+            if (correct.length === window.memoryTotalTiles) {
+                addPoints(50);
+                showMemoryLevelComplete();
             }
+            }, 300);
+            } else {
+            setTimeout(() => {
+            flipped[0].classList.remove('flipped');
+            flipped[1].classList.remove('flipped');
+            flipped[0].textContent = '?';
+            flipped[1].textContent = '?';
+            }, 500);
+            }
+            }
+        }
+
+        function showMemoryLevelComplete() {
+            let html = `<div class="success-message">¡Nivel Completado! 🎉 +50 puntos</div>
+            <p style="text-align:center; font-size:1.2em; margin:30px 0; color:#333;">Nivel ${window.currentMemoryLevel} finalizado correctamente.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;">
+                <button class="btn" onclick="startMemoryGame()" style="background:#72F80F; color:black; padding:15px; font-weight:bold;">➡️ Siguiente Nivel</button>
+                <button class="btn" onclick="closeGame()" style="background:#667eea; color:white; padding:15px; font-weight:bold;">← Salir</button>
+            </div>`;
+            document.getElementById('gameContent').innerHTML = html;
         }
         
         // JUEGO 4: ABECEDARIO
@@ -1407,11 +1635,41 @@
         // JUEGO 5: GEOGRAFÍA
         function startGeographyGame() {
             const data = [
-                { question: '¿Cuál es la capital de Francia?', options: ['París', 'Berlín', 'Madrid'], correct: 0 },
-                { question: '¿En qué continente está Brasil?', options: ['América del Sur', 'Asia', 'África'], correct: 0 },
-                { question: '¿Cuál es el océano más grande?', options: ['Pacífico', 'Atlántico', 'Índico'], correct: 0 },
-                { question: '¿Cuál es la capital de Japón?', options: ['Tokio', 'Osaka', 'Kioto'], correct: 0 },
-                { question: '¿En qué país está el Taj Mahal?', options: ['India', 'Pakistán', 'Bangladesh'], correct: 0 }
+            { question: '¿Cuál es la capital de Francia?', options: ['París', 'Berlín', 'Madrid'], correct: 0 },
+            { question: '¿En qué continente está Brasil?', options: ['América del Sur', 'Asia', 'África'], correct: 0 },
+            { question: '¿Cuál es el océano más grande?', options: ['Pacífico', 'Atlántico', 'Índico'], correct: 0 },
+            { question: '¿Cuál es la capital de Japón?', options: ['Tokio', 'Osaka', 'Kioto'], correct: 0 },
+            { question: '¿En qué país está el Taj Mahal?', options: ['India', 'Pakistán', 'Bangladesh'], correct: 0 },
+            { question: '¿Cuál es la capital de Australia?', options: ['Canberra', 'Sídney', 'Melbourne'], correct: 0 },
+            { question: '¿En qué país está la Estatua de la Libertad?', options: ['Estados Unidos', 'Francia', 'Italia'], correct: 0 },
+            { question: '¿Cuál es la capital de Alemania?', options: ['Berlín', 'Múnich', 'Hamburgo'], correct: 0 },
+            { question: '¿En qué continente está Egipto?', options: ['África', 'Asia', 'Europa'], correct: 0 },
+            { question: '¿Cuál es el río más largo del mundo?', options: ['Nilo', 'Amazonas', 'Yangtze'], correct: 0 },
+            { question: '¿Cuál es la capital de Italia?', options: ['Roma', 'Milán', 'Venecia'], correct: 0 },
+            { question: '¿En qué país está la Torre Eiffel?', options: ['Francia', 'Alemania', 'Bélgica'], correct: 0 },
+            { question: '¿Cuál es el país más grande por área?', options: ['Rusia', 'Canadá', 'China'], correct: 0 },
+            { question: '¿En qué continente está Nueva Zelanda?', options: ['Oceanía', 'Asia', 'Australia'], correct: 0 },
+            { question: '¿Cuál es la capital de China?', options: ['Pekín', 'Shanghái', 'Cantón'], correct: 0 },
+            { question: '¿En qué país está el Gran Cañón?', options: ['Estados Unidos', 'Canadá', 'México'], correct: 0 },
+            { question: '¿Cuál es la capital de España?', options: ['Madrid', 'Barcelona', 'Valencia'], correct: 0 },
+            { question: '¿En qué país está Machu Picchu?', options: ['Perú', 'Bolivia', 'Ecuador'], correct: 0 },
+            { question: '¿Cuál es la capital de Rusia?', options: ['Moscú', 'San Petersburgo', 'Novosibirsk'], correct: 0 },
+            { question: '¿En qué continente está Sudáfrica?', options: ['África', 'Asia', 'América del Sur'], correct: 0 },
+            { question: '¿Cuál es la capital de México?', options: ['Ciudad de México', 'Guadalajara', 'Monterrey'], correct: 0 },
+            { question: '¿En qué país está el Big Ben?', options: ['Reino Unido', 'Francia', 'Alemania'], correct: 0 },
+            { question: '¿Cuál es la capital de Grecia?', options: ['Atenas', 'Tesalónica', 'Rodas'], correct: 0 },
+            { question: '¿En qué país está la Muralla China?', options: ['China', 'Japón', 'Corea del Sur'], correct: 0 },
+            { question: '¿Cuál es el monte más alto del mundo?', options: ['Everest', 'K2', 'Kangchenjunga'], correct: 0 },
+            { question: '¿En qué país está el Coliseo?', options: ['Italia', 'Grecia', 'España'], correct: 0 },
+            { question: '¿Cuál es la capital de Canadá?', options: ['Ottawa', 'Toronto', 'Vancouver'], correct: 0 },
+            { question: '¿En qué país está Petra?', options: ['Jordania', 'Arabia Saudí', 'Palestina'], correct: 0 },
+            { question: '¿Cuál es la capital de Tailandia?', options: ['Bangkok', 'Chiang Mai', 'Phuket'], correct: 0 },
+            { question: '¿En qué continente está Dinamarca?', options: ['Europa', 'Asia', 'América'], correct: 0 },
+            { question: '¿Cuál es la capital de Turquía?', options: ['Ankara', 'Estambul', 'Esmirna'], correct: 0 },
+            { question: '¿En qué país está la Cristo Redentor?', options: ['Brasil', 'Argentina', 'Uruguay'], correct: 0 },
+            { question: '¿Cuál es la capital de Indonesia?', options: ['Yakarta', 'Surabaya', 'Bandung'], correct: 0 },
+            { question: '¿En qué país está la Gran Barrera de Coral?', options: ['Australia', 'Filipinas', 'Indonesia'], correct: 0 },
+            { question: '¿Cuál es la capital de Suecia?', options: ['Estocolmo', 'Gotemburgo', 'Malmö'], correct: 0 }
             ];
             
             const random = Math.floor(Math.random() * data.length);
@@ -1446,8 +1704,39 @@
                 { question: '¿Cuál es el planeta más grande?', options: ['Júpiter', 'Saturno', 'Urano'], correct: 0 },
                 { question: '¿Los pájaros son animales que cambian de color en la estación fría?', options: ['No, se llaman anfibios', 'Sí, son aves migratorias', 'No'], correct: 2 },
                 { question: '¿Cuál es el animal terrestre más rápido?', options: ['Guepardo', 'Gacela', 'Avestruz'], correct: 0 },
-                { question: '¿Las plantas producen oxígeno?', options: ['Sí', 'No', 'A veces'], correct: 0 }
+                { question: '¿Las plantas producen oxígeno?', options: ['Sí', 'No', 'A veces'], correct: 0 },
+                { question: '¿Cuál es el gas que respiramos?', options: ['Oxígeno', 'Nitrógeno', 'Dióxido de Carbono'], correct: 0 },
+                            { question: '¿Cuántas patas tiene una araña?', options: ['6', '8', '10'], correct: 1 },
+                            { question: '¿Cuál es el planeta más cercano al Sol?', options: ['Mercurio', 'Venus', 'Tierra'], correct: 0 },
+                            { question: '¿Los peces respiran aire?', options: ['Sí', 'No, usan branquias', 'Solo algunos'], correct: 1 },
+                            { question: '¿Cuál es el animal más grande del mundo?', options: ['Ballena Azul', 'Elefante', 'Jirafa'], correct: 0 },
+                            { question: '¿Qué proceso realizan las plantas para crecer?', options: ['Fotosíntesis', 'Respiración', 'Fermentación'], correct: 0 },
+                            { question: '¿Cuántos huesos tienen los adultos?', options: ['186', '206', '226'], correct: 1 },
+                            { question: '¿Cuál es el órgano más grande del cuerpo?', options: ['Hígado', 'Corazón', 'Pulmones'], correct: 0 },
+                            { question: '¿Cuál es la temperatura normal del cuerpo humano?', options: ['36°C', '37°C', '38°C'], correct: 1 },
+                            { question: '¿Cuántos continentes hay?', options: ['5', '6', '7'], correct: 2 },
+                            { question: '¿Cuál es la montaña más alta del mundo?', options: ['Everest', 'Kilimanjaro', 'Aconcagua'], correct: 0 },
+                            { question: '¿Cuántos océanos hay en la Tierra?', options: ['3', '4', '5'], correct: 2 },
+                            { question: '¿Cuál animal es un mamífero marino?', options: ['Delfín', 'Tiburón', 'Cocodrilo'], correct: 0 },
+                            { question: '¿Cuál es la velocidad de la luz?', options: ['300,000 km/s', '150,000 km/s', '450,000 km/s'], correct: 0 },
+                            { question: '¿Cuántas especies de animales existen aproximadamente?', options: ['Millones', 'Cientos de miles', 'Decenas de miles'], correct: 0 },
+                            { question: '¿Cuál es el mineral más duro del mundo?', options: ['Diamante', 'Rubí', 'Zafiro'], correct: 0 },
+                            { question: '¿Cuál es el color de la sangre oxigenada?', options: ['Rojo brillante', 'Rojo oscuro', 'Azul'], correct: 0 },
+                            { question: '¿Cuántos dientes tiene un adulto?', options: ['28', '32', '36'], correct: 1 },
+                            { question: '¿Cuál es el animal terrestre más rápido?', options: ['Guepardo', 'Antílope', 'Avestruz'], correct: 0 },
+                            { question: '¿Las serpientes tienen párpados?', options: ['Sí', 'No', 'Solo algunas'], correct: 1 },
+                            { question: '¿Cuál es el único mamífero que vuela?', options: ['Murciélago', 'Ardilla voladora', 'Lémur volador'], correct: 0 },
+                            { question: '¿Cuántas cámaras tiene el corazón humano?', options: ['2', '3', '4'], correct: 2 },
+                            { question: '¿Cuál es el gas más abundante en la atmósfera?', options: ['Nitrógeno', 'Oxígeno', 'Argón'], correct: 0 },
+                            { question: '¿Cuál es el animal que duerme de pie?', options: ['Caballo', 'Vaca', 'Jirafa'], correct: 0 },
+                            { question: '¿Cuál es el único animal que puede caminar hacia atrás?', options: ['Elefante', 'Canguro', 'Emu'], correct: 2 },
+                            { question: '¿Cuántos años pueden vivir las tortugas gigantes?', options: ['50 años', '100 años', '150+ años'], correct: 2 },
+                            { question: '¿Cuál es el metal más abundante en la corteza terrestre?', options: ['Aluminio', 'Hierro', 'Cobre'], correct: 0 },
+                            { question: '¿Las plantas carnívoras existen realmente?', options: ['Sí', 'No', 'Solo en ficción'], correct: 0 },
+                            { question: '¿Cuál es la velocidad del sonido?', options: ['340 m/s', '200 m/s', '500 m/s'], correct: 0 },
+                            { question: '¿Cuánto tiempo tarda la luz del Sol en llegar a la Tierra?', options: ['8 minutos', '15 minutos', '2 minutos'], correct: 0 },
             ];
+            
             
             const random = Math.floor(Math.random() * data.length);
             const q = data[random];
@@ -1477,12 +1766,37 @@
         // JUEGO 7: LÓGICA
         function startLogicGame() {
             const puzzles = [
-                { question: 'Si 2+2=4, ¿cuánto es 3+3?', options: ['5', '6', '7'], correct: 1 },
-                { question: '¿Cuál es el siguiente número: 2, 4, 6, 8, ?', options: ['9', '10', '12'], correct: 1 },
-                { question: '¿Cuál forma geométrica tiene 4 lados iguales?', options: ['Triángulo', 'Cuadrado', 'Pentágono'], correct: 1 },
-                { question: '¿Cuál es la mitad de 20?', options: ['5', '10', '15'], correct: 1 },
-                { question: '¿Si tengo 5 manzanas y doy 2, cuántas me quedan?', options: ['2', '3', '7'], correct: 1 }
-            ];
+                            { question: 'Si 2+2=4, ¿cuánto es 3+3?', options: ['5', '6', '7'], correct: 1 },
+                            { question: '¿Cuál es el siguiente número: 2, 4, 6, 8, ?', options: ['9', '10', '12'], correct: 1 },
+                            { question: '¿Cuál forma geométrica tiene 4 lados iguales?', options: ['Triángulo', 'Cuadrado', 'Pentágono'], correct: 1 },
+                            { question: '¿Cuál es la mitad de 20?', options: ['5', '10', '15'], correct: 1 },
+                            { question: '¿Si tengo 5 manzanas y doy 2, cuántas me quedan?', options: ['2', '3', '7'], correct: 1 },
+                            { question: '¿Cuál número es mayor: 99 o 100?', options: ['99', '100', 'Son iguales'], correct: 1 },
+                            { question: '¿Cuál es el doble de 15?', options: ['25', '30', '20'], correct: 1 },
+                            { question: '¿Si A=B y B=C, entonces A es igual a?', options: ['B', 'C', 'A y C'], correct: 2 },
+                            { question: '¿Cuál es el opuesto de sumar?', options: ['Multiplicar', 'Restar', 'Dividir'], correct: 1 },
+                            { question: '¿50 + 50 es igual a?', options: ['100', '150', '200'], correct: 0 },
+                            { question: '¿Cuál número no pertenece: 2, 4, 6, 7, 8?', options: ['7', '2', '8'], correct: 0 },
+                            { question: '¿Si compro 3 juguetes a $10 cada uno, gasto?', options: ['$20', '$30', '$25'], correct: 1 },
+                            { question: '¿Cuál es el triple de 5?', options: ['10', '15', '20'], correct: 1 },
+                            { question: '¿Un cuadrado tiene cuántas esquinas?', options: ['3', '4', '5'], correct: 1 },
+                            { question: '¿Si restarle 10 a 25, me queda?', options: ['15', '10', '35'], correct: 0 },
+                            { question: '¿Cuál número es más pequeño: 45 o 54?', options: ['45', '54', 'Iguales'], correct: 0 },
+                            { question: '¿100 ÷ 10 es igual a?', options: ['5', '10', '20'], correct: 1 },
+                            { question: '¿Si la mitad de X es 8, ¿cuánto es X?', options: ['4', '16', '8'], correct: 1 },
+                            { question: '¿Cuál es mayor: 2×5 o 3×3?', options: ['2×5', '3×3', 'Iguales'], correct: 0 },
+                            { question: '¿En una semana hay cuántos días?', options: ['5', '7', '6'], correct: 1 },
+                            { question: '¿Si tengo 12 caramelos y los divido en 3, me toca?', options: ['3', '4', '5'], correct: 1 },
+                            { question: '¿Cuál número sigue: 1, 1, 2, 3, 5, ?', options: ['7', '8', '9'], correct: 0 },
+                            { question: '¿El doble del doble de 5 es?', options: ['10', '15', '20'], correct: 2 },
+                            { question: '¿Si A > B y B > C, entonces A es?', options: ['Menor que C', 'Mayor que C', 'Igual a C'], correct: 1 },
+                            { question: '¿Cuál es el siguiente en: 10, 20, 30, 40, ?', options: ['45', '50', '55'], correct: 1 },
+                            { question: '¿Si gasto $15 de $40, me sobra?', options: ['$20', '$25', '$30'], correct: 1 },
+                            { question: '¿En un triángulo hay cuántos lados?', options: ['2', '3', '4'], correct: 1 },
+                            { question: '¿Cuál es la suma de 7+8+5?', options: ['18', '20', '22'], correct: 1 },
+                            { question: '¿Si el doble de un número es 24, el número es?', options: ['10', '12', '14'], correct: 1 },
+                            { question: '¿Cuál número NO es par: 2, 4, 6, 7, 8?', options: ['7', '4', '2'], correct: 0 }
+                        ];
             
             const random = Math.floor(Math.random() * puzzles.length);
             const p = puzzles[random];
@@ -1515,8 +1829,28 @@
                 { question: '¿Cuál es la ortografía correcta?', options: ['Corazón', 'Corazon', 'Corazó'], correct: 0 },
                 { question: '¿Cómo se escribe...?', options: ['Elefante', 'Elefanteh', 'Elifante'], correct: 0 },
                 { question: '¿Cuál está bien escrito?', options: ['Biblioteca', 'Bilbioteca', 'Biblioteka'], correct: 0 },
-                { question: '¿La forma correcta es...?', options: ['Belleza', 'Belleza', 'Bellesa'], correct: 0 },
-                { question: '¿Cuál palabra es correcta?', options: ['Horizonte', 'Orizonte', 'Horizonte'], correct: 0 }
+                { question: '¿La forma correcta es...?', options: ['Belleza', 'Bellesa', 'Beleza'], correct: 0 },
+                { question: '¿Cuál palabra es correcta?', options: ['Horizonte', 'Orizonte', 'Horizunte'], correct: 0 },
+                { question: '¿Cómo se escribe el fruto del árbol?', options: ['Manzana', 'Mansana', 'Manzanna'], correct: 0 },
+                { question: '¿Cuál es la ortografía de este animal?', options: ['Mariposa', 'Mariposá', 'Maripossa'], correct: 0 },
+                { question: '¿Cómo se escribe correctamente?', options: ['Ventana', 'Bentana', 'Ventanna'], correct: 0 },
+                { question: '¿Cuál está bien escrito?', options: ['Profesión', 'Profesion', 'Profecíon'], correct: 0 },
+                { question: '¿La forma correcta es...?', options: ['Emoción', 'Emoción', 'Emosion'], correct: 0 },
+                { question: '¿Cómo se escribe esta palabra?', options: ['Teléfono', 'Telefono', 'Telefoño'], correct: 0 },
+                { question: '¿Cuál es correcta?', options: ['Geografía', 'Geografía', 'Geofrafia'], correct: 0 },
+                { question: '¿Cuál es la forma correcta?', options: ['Educación', 'Eduación', 'Educación'], correct: 0 },
+                { question: '¿Cómo se escribe este lugar?', options: ['Montaña', 'Montania', 'Montaña'], correct: 0 },
+                { question: '¿Cuál está bien escrito?', options: ['Tranquilidad', 'Tranquilidad', 'Tranquilidá'], correct: 0 },
+                { question: '¿La ortografía correcta es...?', options: ['Decisión', 'Desicion', 'Decición'], correct: 0 },
+                { question: '¿Cómo se escribe correctamente?', options: ['Experiencia', 'Exsperiencia', 'Esperencia'], correct: 0 },
+                { question: '¿Cuál es correcta?', options: ['Naturaleza', 'Naturalesa', 'Nauraleza'], correct: 0 },
+                { question: '¿Cuál está bien escrito?', options: ['Satisfacción', 'Satisfacion', 'Satisfaccíon'], correct: 0 },
+                { question: '¿La forma correcta es...?', options: ['Imaginación', 'Imaginación', 'Imaginasion'], correct: 0 },
+                { question: '¿Cómo se escribe este sustantivo?', options: ['Comunicación', 'Comunicasion', 'Comunicación'], correct: 0 },
+                { question: '¿Cuál es la ortografía correcta?', options: ['Competencia', 'Competencia', 'Competancia'], correct: 0 },
+                { question: '¿Cómo se escribe correctamente?', options: ['Inteligencia', 'Inteligencia', 'Intelijencia'], correct: 0 },
+                { question: '¿Cuál está bien escrito?', options: ['Paciencia', 'Paciencia', 'Pasencia'], correct: 0 },
+                { question: '¿La forma correcta es...?', options: ['Perseverancia', 'Perseverancia', 'Perseveransia'], correct: 0 }
             ];
             
             const random = Math.floor(Math.random() * words.length);
@@ -1547,11 +1881,50 @@
         // JUEGO 9: HISTORIA
         function startHistoryGame() {
             const data = [
-                { question: '¿En qué año terminó la Segunda Guerra Mundial?', options: ['1945', '1944', '1946'], correct: 0 },
-                { question: '¿Quién fue el primer presidente de los EE.UU.?', options: ['George Washington', 'Thomas Jefferson', 'Abraham Lincoln'], correct: 0 },
-                { question: '¿En qué siglo vivió Colón?', options: ['XV', 'XVI', 'XIV'], correct: 0 },
-                { question: '¿Cuál es la pirámide más grande?', options: ['Keops', 'Kéfren', 'Micerino'], correct: 0 },
-                { question: '¿En qué año llegó el hombre a la luna?', options: ['1969', '1970', '1968'], correct: 0 }
+            { question: '¿En qué año terminó la Segunda Guerra Mundial?', options: ['1945', '1944', '1946'], correct: 0 },
+            { question: '¿Quién fue el primer presidente de los EE.UU.?', options: ['George Washington', 'Thomas Jefferson', 'Abraham Lincoln'], correct: 0 },
+            { question: '¿En qué siglo vivió Colón?', options: ['XV', 'XVI', 'XIV'], correct: 0 },
+            { question: '¿Cuál es la pirámide más grande?', options: ['Keops', 'Kéfren', 'Micerino'], correct: 0 },
+            { question: '¿En qué año llegó el hombre a la luna?', options: ['1969', '1970', '1968'], correct: 0 },
+            { question: '¿Quién escribió la Declaración de Independencia de EE.UU.?', options: ['Thomas Jefferson', 'Benjamin Franklin', 'John Adams'], correct: 0 },
+            { question: '¿En qué año cayó el Muro de Berlín?', options: ['1989', '1988', '1990'], correct: 0 },
+            { question: '¿Cuál fue el imperio más grande de la antigüedad?', options: ['Imperio Romano', 'Imperio Persa', 'Imperio Macedonio'], correct: 0 },
+            { question: '¿Quién fue Napoleón Bonaparte?', options: ['Militar y emperador francés', 'Rey de España', 'General italiano'], correct: 0 },
+            { question: '¿En qué año comenzó la Primera Guerra Mundial?', options: ['1914', '1915', '1913'], correct: 0 },
+            { question: '¿Quién descubrió América?', options: ['Cristóbal Colón', 'Américo Vespucio', 'Leif Erikson'], correct: 0 },
+            { question: '¿Cuál era la capital del Imperio Romano?', options: ['Roma', 'Constantinopla', 'Atenas'], correct: 0 },
+            { question: '¿En qué siglo ocurrió la Revolución Francesa?', options: ['XVIII', 'XVII', 'XIX'], correct: 0 },
+            { question: '¿Quién fue Albert Einstein?', options: ['Físico teórico', 'Filósofo', 'Matemático'], correct: 0 },
+            { question: '¿En qué año se fundó la ONU?', options: ['1945', '1944', '1946'], correct: 0 },
+            { question: '¿Quién fue Mahatma Gandhi?', options: ['Líder independencia india', 'Presidente de Pakistán', 'Rey de la India'], correct: 0 },
+            { question: '¿En qué país ocurrió la Revolución Rusa?', options: ['Rusia', 'Alemania', 'Polonia'], correct: 0 },
+            { question: '¿Cuál fue la antigua Mesopotamia?', options: ['Entre Tigris y Éufrates', 'Valle del Nilo', 'Llanuras de India'], correct: 0 },
+            { question: '¿Quién fue Leonardo da Vinci?', options: ['Artista y científico', 'Emperador', 'Filósofo'], correct: 0 },
+            { question: '¿En qué año se declaró la independencia de América Latina?', options: ['Principios 1800s', 'Fin 1700s', 'Mediados 1800s'], correct: 0 },
+            { question: '¿Cuál es la civilización más antigua conocida?', options: ['Sumeria', 'Egipto', 'Grecia'], correct: 0 },
+            { question: '¿Quién fue Cleopatra?', options: ['Reina de Egipto', 'Emperatriz Romana', 'Reina de Grecia'], correct: 0 },
+            { question: '¿En qué siglo vivió Alejandro Magno?', options: ['IV a.C.', 'III a.C.', 'V a.C.'], correct: 0 },
+            { question: '¿Cuál fue el mayor imperio del siglo XIX?', options: ['Imperio Británico', 'Imperio Francés', 'Imperio Alemán'], correct: 0 },
+            { question: '¿Quién fue Martin Luther King?', options: ['Activista derechos civiles', 'Presidente de EE.UU.', 'General militar'], correct: 0 },
+            { question: '¿En qué año se abolió la esclavitud en EE.UU.?', options: ['1865', '1863', '1867'], correct: 0 },
+            { question: '¿Qué fue la Peste Negra?', options: ['Pandemia del siglo XIV', 'Guerra medieval', 'Revolución agrícola'], correct: 0 },
+            { question: '¿Quién fue Joan of Arc?', options: ['Heroína francesa medieval', 'Reina inglesa', 'Santa romana'], correct: 0 },
+            { question: '¿En qué país se produjo la Revolución Industrial primero?', options: ['Inglaterra', 'Francia', 'Alemania'], correct: 0 },
+            { question: '¿Cuál fue la dinastía más larga de China?', options: ['Tang', 'Han', 'Ming'], correct: 0 },
+            { question: '¿Quién fue Julio César?', options: ['General y político romano', 'Emperador egipcio', 'Rey griego'], correct: 0 },
+            { question: '¿En qué año se proclamó la República en España?', options: ['1931', '1930', '1932'], correct: 0 },
+            { question: '¿Qué fue el Renacimiento?', options: ['Movimiento cultural europeo', 'Guerra medieval', 'Período de la Edad Media'], correct: 0 },
+            { question: '¿Quién pintó la Capilla Sixtina?', options: ['Michelangelo', 'Leonardo da Vinci', 'Rafael'], correct: 0 },
+            { question: '¿En qué siglo se inventó la imprenta?', options: ['XV', 'XVI', 'XIV'], correct: 0 },
+            { question: '¿Quién fue Moisés?', options: ['Líder religioso hebreo', 'Rey de Egipto', 'Profeta árabe'], correct: 0 },
+            { question: '¿En qué año se firmó la Magna Carta?', options: ['1215', '1214', '1216'], correct: 0 },
+            { question: '¿Cuál fue la antigua ciudad de Troya?', options: ['En actual Turquía', 'En Grecia', 'En Italia'], correct: 0 },
+            { question: '¿Quién fue Isaac Newton?', options: ['Físico y matemático', 'Astrónomo', 'Filósofo'], correct: 0 },
+            { question: '¿En qué año se produjo el Holocausto como evento importante de la II Guerra?', options: ['1933-1945', '1939-1945', '1941-1945'], correct: 0 },
+            { question: '¿Quién fue Tutankamón?', options: ['Faraón egipcio', 'General greco-romano', 'Rey babilónico'], correct: 0 },
+            { question: '¿En qué año cayó el Imperio Romano de Occidente?', options: ['476', '475', '477'], correct: 0 },
+            { question: '¿Quién fue Marco Polo?', options: ['Viajero y explorador veneciano', 'Conquistador español', 'Navegante portugués'], correct: 0 },
+            { question: '¿Cuál fue la Guerra de los 100 Años?', options: ['Conflicto Inglaterra-Francia', 'Guerra civil española', 'Conflicto Italia-Francia'], correct: 0 }
             ];
             
             const random = Math.floor(Math.random() * data.length);
@@ -1582,11 +1955,41 @@
         // JUEGO 10: ARTES CREATIVAS
         function startArtsGame() {
             const data = [
-                { question: '¿Cuál es el color primario?', options: ['Azul', 'Verde', 'Naranja'], correct: 0 },
-                { question: '¿Quién pintó la Mona Lisa?', options: ['Leonardo da Vinci', 'Michelangelo', 'Raphael'], correct: 0 },
-                { question: '¿Cuántas cuerdas tiene una guitarra?', options: ['6', '7', '8'], correct: 0 },
-                { question: '¿Cuál instrumento es de viento?', options: ['Flauta', 'Tambor', 'Violín'], correct: 0 },
-                { question: '¿Cuál color NO es primario?', options: ['Verde', 'Azul', 'Rojo'], correct: 0 }
+            { question: '¿Cuál es el color primario?', options: ['Azul', 'Verde', 'Naranja'], correct: 0 },
+            { question: '¿Quién pintó la Mona Lisa?', options: ['Leonardo da Vinci', 'Michelangelo', 'Raphael'], correct: 0 },
+            { question: '¿Cuántas cuerdas tiene una guitarra?', options: ['6', '7', '8'], correct: 0 },
+            { question: '¿Cuál instrumento es de viento?', options: ['Flauta', 'Tambor', 'Violín'], correct: 0 },
+            { question: '¿Cuál color NO es primario?', options: ['Verde', 'Azul', 'Rojo'], correct: 0 },
+            { question: '¿Cuál es el color secundario?', options: ['Naranja', 'Rojo', 'Amarillo'], correct: 0 },
+            { question: '¿Quién esculpió el David?', options: ['Michelangelo', 'Donatello', 'Bernini'], correct: 0 },
+            { question: '¿Cuántas teclas tiene un piano?', options: ['88', '85', '90'], correct: 0 },
+            { question: '¿Cuál instrumento es de percusión?', options: ['Xilófono', 'Trompeta', 'Saxofón'], correct: 0 },
+            { question: '¿Quién pintó Los Girasoles?', options: ['Vincent van Gogh', 'Pablo Picasso', 'Claude Monet'], correct: 0 },
+            { question: '¿Cuántos colores primarios hay?', options: ['3', '4', '5'], correct: 0 },
+            { question: '¿Cuál es un instrumento de cuerda?', options: ['Violín', 'Flauta', 'Trombón'], correct: 0 },
+            { question: '¿Quién pintó Noche Estrellada?', options: ['Vincent van Gogh', 'Salvador Dalí', 'Pablo Picasso'], correct: 0 },
+            { question: '¿Cuál NO es instrumento musical?', options: ['Martillo', 'Flauta', 'Violín'], correct: 0 },
+            { question: '¿Cuál es el arte de esculpir madera?', options: ['Talla', 'Grabado', 'Modelado'], correct: 0 },
+            { question: '¿Cuál es una forma de arte visual?', options: ['Dibujo', 'Danza', 'Música'], correct: 0 },
+            { question: '¿Quién pintó La Persistencia de la Memoria?', options: ['Salvador Dalí', 'Pablo Picasso', 'Joan Miró'], correct: 0 },
+            { question: '¿Cuántas notas musicales hay?', options: ['7', '8', '6'], correct: 0 },
+            { question: '¿Cuál instrumento tiene un arco?', options: ['Violín', 'Guitarra', 'Piano'], correct: 0 },
+            { question: '¿Cuál es un arte escénico?', options: ['Teatro', 'Pintura', 'Escultura'], correct: 0 },
+            { question: '¿Quién esculpió la Victoria de Samotracia?', options: ['Desconocido', 'Fidias', 'Praxíteles'], correct: 0 },
+            { question: '¿Cuál NO es color primario?', options: ['Morado', 'Rojo', 'Amarillo'], correct: 0 },
+            { question: '¿Cuál instrumento es típico del jazz?', options: ['Saxofón', 'Flauta dulce', 'Harmónica'], correct: 0 },
+            { question: '¿Quién pintó La Joven de la Perla?', options: ['Johannes Vermeer', 'Rembrandt', 'Frans Hals'], correct: 0 },
+            { question: '¿Cuál es el arte de la fotografía conocida también como?', options: ['Fotografía', 'Grabado', 'Ilustración'], correct: 0 },
+            { question: '¿Cuántas cuerdas tiene un violín?', options: ['4', '5', '6'], correct: 0 },
+            { question: '¿Cuál movimiento artístico fue liderado por Picasso y Braque?', options: ['Cubismo', 'Surrealismo', 'Impresionismo'], correct: 0 },
+            { question: '¿Quién pintó El Grito?', options: ['Edvard Munch', 'Wassily Kandinsky', 'Paul Klee'], correct: 0 },
+            { question: '¿Cuál es un instrumento de viento de madera?', options: ['Oboe', 'Trompeta', 'Trompa'], correct: 0 },
+            { question: '¿Cuál NO es una técnica de pintura?', options: ['Costura', 'Óleo', 'Acuarela'], correct: 0 },
+            { question: '¿Quién fue un famoso pintor surrealista?', options: ['Salvador Dalí', 'Pablo Picasso', 'Henri Matisse'], correct: 0 },
+            { question: '¿Cuál es la mezcla de dos colores primarios para hacer naranja?', options: ['Rojo y Amarillo', 'Rojo y Azul', 'Azul y Amarillo'], correct: 0 },
+            { question: '¿Cuál instrumento hace sonidos al vibrar cuerdas?', options: ['Guitarra', 'Trompa', 'Oboe'], correct: 0 },
+            { question: '¿Quién pintó La Noche en la Cabaña?', options: ['Paul Gauguin', 'Claude Monet', 'Pierre-Auguste Renoir'], correct: 0 },
+            { question: '¿Cuál arte combina música, danza y drama?', options: ['Ópera', 'Ballet', 'Concierto'], correct: 0 }
             ];
             
             const random = Math.floor(Math.random() * data.length);
@@ -2025,5 +2428,4 @@
         }
     </script>
 </body> 
-
 </html>
